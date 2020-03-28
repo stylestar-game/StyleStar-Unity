@@ -12,6 +12,6 @@
         public static readonly string GameConfig = "GameConfig";
 
         public static readonly string UserFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\StyleStar\\";
-        public static readonly string SongFolder = UserFolder + "Songs";
+        public static readonly string SongFolder = "Songs";
     }
 }

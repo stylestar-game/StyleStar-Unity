@@ -5,11 +5,12 @@ using UnityEngine;
 public class ObjectPooler : ScriptableObject
 {
     public List<GameObject> pooledObjects;
+    public GameObject Parent;
     GameObject objectToPool;
     int amountToPool;
     bool shouldExpand;
 
-    public void SetPool(GameObject baseObj, int amount, bool expand)
+    public void SetPool(GameObject baseObj, int amount, bool expand, GameObject parent = null)
     {
         objectToPool = baseObj;
         amountToPool = amount;
@@ -19,6 +20,8 @@ public class ObjectPooler : ScriptableObject
         for (int i = 0; i < amountToPool; i++)
         {
             GameObject obj = (GameObject)Instantiate(objectToPool);
+            if (parent != null)
+                obj.transform.SetParent(parent.transform, false);
             obj.SetActive(false);
             pooledObjects.Add(obj);
         }
@@ -40,5 +43,11 @@ public class ObjectPooler : ScriptableObject
         }
         else
             return null;
+    }
+
+    public void EmptyPool()
+    {
+        foreach (var obj in pooledObjects)
+            obj.SetActive(false);
     }
 }

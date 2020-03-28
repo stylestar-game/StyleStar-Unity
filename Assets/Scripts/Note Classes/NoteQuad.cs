@@ -30,22 +30,50 @@ public class NoteQuad
         var parentBeat = Globals.GetDistAtBeat(parent.BeatLocation);
         var prevBeat = Globals.GetDistAtBeat(prevNote.BeatLocation);    
         height = parentBeat - prevBeat;
-        var topNote = parent.Type == NoteType.Shuffle ? prevNote : parent;
+        var topNote = parent.Type == NoteType.Shuffle && !parent.IsComplexShuffle ? prevNote : parent;
+        var botNote = prevNote.IsComplexShuffle ? new Note(prevNote.BeatLocation, prevNote.EndLaneIndex, prevNote.EndWidth) : prevNote;
         float[] coords =
         {
-            (float)Globals.CalcTransX(prevNote, Side.Left), // Lower Left
+            (float)Globals.CalcTransX(botNote, Side.Left), // Lower Left
             (float)Globals.CalcTransX(topNote, Side.Right), // Upper Right
-            (float)Globals.CalcTransX(prevNote, Side.Right), // Lower Right
+            (float)Globals.CalcTransX(botNote, Side.Right), // Lower Right
             (float)Globals.CalcTransX(topNote, Side.Left) // Upper Left
         };
         float max = coords.Max();
         float min = coords.Min();
         width = max - min;
         XOffset = max - (width / 2);
+        var topY = height / 2;
+        var botY = height / 2;
+
+        switch (parent.Type)
+        {
+            case NoteType.Step:
+            case NoteType.Hold:
+            case NoteType.Slide:
+                topY -= Globals.StepNoteHeightOffset;
+                break;
+            case NoteType.Shuffle:
+                topY += (float)(Globals.BaseNoteZScale * GameState.ScrollSpeed * Globals.ShuffleNoteMultiplier);
+                break;
+        }
+        switch (prevNote.Type)
+        {
+            case NoteType.Step:
+            case NoteType.Hold:
+            case NoteType.Slide:
+            case NoteType.Shuffle:
+                botY += Globals.StepNoteHeightOffset;
+                break;
+        }
+
+        //// Recalc Height
+        //height = botY + topY;
 
         for (int i = 0; i < coords.Length; i++)
         {
-            verts[i] = new Vector3(coords[i] - XOffset, (float)height / 2 * yCoords[i]);
+            //verts[i] = new Vector3(coords[i] - XOffset, (float)height / 2 * yCoords[i]);
+            verts[i] = new Vector3(coords[i] - XOffset, ((i % 2) == 0 ? (float)botY : (float)topY) * yCoords[i]);
         }
 
         mesh.vertices = verts;

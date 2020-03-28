@@ -21,17 +21,18 @@ namespace StyleStar
         public string Title { get; set; }
         public string Artist { get; set; }
         public string Designer { get; set; }
-        public Texture2D AlbumImage { get; set; }
+        public Sprite AlbumImage { get; set; }
         public string Jacket { get; set; }
-        public Texture2D TitleImage { get; set; }
+        public Sprite TitleImage { get; set; }
         public string TitleCard { get; set; }
-        public Texture2D ArtistImage { get; set; }
+        public Sprite ArtistImage { get; set; }
         public string ArtistCard { get; set; }
         public Difficulty Difficulty { get; set; }
         public int Level { get; set; }
-        public Color ColorFore { get; set; }
-        public Color ColorBack { get; set; }
-        public Color ColorAccent { get; set; }
+        public Color ColorFore { get; set; } = ThemeColors.NullColor;
+        public Color ColorBack { get; set; } = ThemeColors.NullColor;
+        public Color ColorAccent { get; set; } = ThemeColors.NullColor;
+        public Version Version { get; set; } = new Version("0.9");
 
         public string SongID { get; set; }  // This is used internally for tracking the song
 
@@ -71,6 +72,8 @@ namespace StyleStar
                         string line = sr.ReadLine();
 
                         string parse;
+                        if (StringExtensions.TrySearchTag(line, "VERSION", out parse))
+                            Version = Version.Parse(parse);
                         if (StringExtensions.TrySearchTag(line, "WAVE", out parse))
                             SongFilename = parse;
                         if (StringExtensions.TrySearchTag(line, "WAVEOFFSET", out parse))
@@ -127,7 +130,7 @@ namespace StyleStar
                 { }
                 else
                 {
-                    AlbumImage = TextureUtil.LoadPNG(FilePath + Jacket);
+                    AlbumImage = TextureUtil.LoadPngAsSprite(FilePath + Jacket);
 
                     //using (FileStream fs = new FileStream(FilePath + Jacket, FileMode.Open))
                     //{
@@ -138,7 +141,7 @@ namespace StyleStar
                 {
                     if (File.Exists(FilePath + TitleCard))
                     {
-                        TitleImage = TextureUtil.LoadPNG(FilePath + TitleCard);
+                        TitleImage = TextureUtil.LoadPngAsSprite(FilePath + TitleCard);
 
                         //using (FileStream fs = new FileStream(FilePath + TitleCard, FileMode.Open))
                         //{
@@ -150,7 +153,7 @@ namespace StyleStar
                 {
                     if (File.Exists(FilePath + ArtistCard))
                     {
-                        ArtistImage = TextureUtil.LoadPNG(FilePath + ArtistCard);
+                        ArtistImage = TextureUtil.LoadPngAsSprite(FilePath + ArtistCard);
 
                         //using (FileStream fs = new FileStream(FilePath + ArtistCard, FileMode.Open))
                         //{
@@ -212,6 +215,16 @@ namespace StyleStar
             {
                 return "";
             }
+        }
+
+        public bool IsAnyColorNull()
+        {
+            if (ColorFore == ThemeColors.NullColor ||
+                ColorBack == ThemeColors.NullColor ||
+                ColorAccent == ThemeColors.NullColor)
+                return true;
+            else
+                return false;
         }
     }
 }

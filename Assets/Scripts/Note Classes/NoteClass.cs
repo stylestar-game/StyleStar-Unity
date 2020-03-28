@@ -13,69 +13,43 @@ namespace StyleStar
         public Motion Motion { get; set; } = Motion.NotSet;
         public HitResult HitResult { get; set; } = new HitResult();
 
+        // Only used for Shuffles
+        public int EndLaneIndex { get; private set; } = int.MinValue;
+        public int EndWidth { get; private set; } = int.MinValue;
+        public bool IsComplexShuffle { get { return EndLaneIndex != int.MinValue && EndWidth != int.MinValue; } }
+
         private GameObject noteObject;
         private NoteQuad quadObject;
         private bool isScaleSet = false;
         private bool texturesLoaded = false;
         private double lastSpeed = 0;
 
-        //private Model model;
-        //private Matrix world;
-        //private MidNoteTexture bgTexture;
-        //private NoteTextureBase noteTexture;
-
-        public Note(double beatLoc, int laneIndex, int width, Side side)
+        public Note(double beatLoc, int laneIndex, int width)
         {
             BeatLocation = beatLoc;
             LaneIndex = laneIndex;
             Width = width;
+        }
+
+        public Note(double beatLoc, int laneIndex, int width, Side side) 
+            : this(beatLoc, laneIndex, width)
+        {
             Side = side;
         }
 
         public Note(double beatLoc, int laneIndex, int width, Motion motion)
+            : this(beatLoc, laneIndex, width)
         {
-            BeatLocation = beatLoc;
-            LaneIndex = laneIndex;
-            Width = width;
             Motion = motion;
             Type = NoteType.Motion;
         }
 
-        //public void PreloadTexture(UserSettings settings)
-        //{
-        //    PreloadTexture(settings, null);
-        //}
-
-        //public void PreloadTexture(UserSettings settings, Note prevNote)
-        //{
-        //    switch (Type)
-        //    {
-        //        case NoteType.Step:
-        //            if (noteTexture == null)
-        //                noteTexture = new StepNoteTexture(settings, this);
-        //            return;
-        //        case NoteType.Motion:
-        //            if (noteTexture == null)
-        //                noteTexture = new MotionTexture(settings, this);
-        //            return;
-        //        case NoteType.Hold:
-        //            if (bgTexture == null)
-        //                bgTexture = new MidNoteTexture(settings, this, prevNote);
-        //            break;
-        //        case NoteType.Slide:
-        //            if (bgTexture == null)
-        //                bgTexture = new MidNoteTexture(settings, this, prevNote);
-        //            break;
-        //        case NoteType.Shuffle:
-        //            if (bgTexture == null)
-        //                bgTexture = new MidNoteTexture(settings, this, prevNote);
-        //            if (noteTexture == null)
-        //                noteTexture = new ShuffleNoteTexture(settings, this, prevNote);
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //}
+        public Note(double beatLoc, int laneIndex, int width, int endLaneIndex, int endWidth)
+            : this(beatLoc, laneIndex, width)
+        {
+            EndLaneIndex = endLaneIndex;
+            EndWidth = endWidth;
+        }
 
         public void Draw(double currentBeat)
         {
@@ -133,6 +107,7 @@ namespace StyleStar
                     if (regen)
                     {
                         quadObject.SetVerts(this, prevNote);
+                        quadObject.transform.position = new Vector3(quadObject.XOffset, -0.0001f, beatLoc - curDist - quadObject.YOffset);
                         lastSpeed = GameState.ScrollSpeed;
                         isScaleSet = true;
                     }
@@ -151,19 +126,31 @@ namespace StyleStar
                 case NoteType.Shuffle:
                     if (regen)
                     {
-                        int minLane = LaneIndex < prevNote.LaneIndex ? LaneIndex : prevNote.LaneIndex;
-                        int maxLane = (LaneIndex + Width) < (prevNote.LaneIndex + prevNote.Width) ? (prevNote.LaneIndex + prevNote.Width) : (LaneIndex + Width);
-                        float flip = LaneIndex > prevNote.LaneIndex ? 1.0f : -1.0f;
-                        float center = (float)((minLane - Globals.NumLanes / 2 + (maxLane - minLane) / 2.0f) * Globals.BeatToWorldXUnits);
+                        int minLane, maxLane;
+                        float flip, center;
+                        if (this.IsComplexShuffle)
+                        {
+                            minLane = LaneIndex < EndLaneIndex ? LaneIndex : EndLaneIndex;
+                            maxLane = (LaneIndex + Width) < (EndLaneIndex + EndWidth) ? (EndLaneIndex + EndWidth) : (LaneIndex + Width);
+                            flip = LaneIndex > prevNote.LaneIndex ? -1.0f : 1.0f;
+                        }
+                        else
+                        {
+                            minLane = LaneIndex < prevNote.LaneIndex ? LaneIndex : prevNote.LaneIndex;
+                            maxLane = (LaneIndex + Width) < (prevNote.LaneIndex + prevNote.Width) ? (prevNote.LaneIndex + prevNote.Width) : (LaneIndex + Width);
+                            flip = LaneIndex > prevNote.LaneIndex ? 1.0f : -1.0f;
+                        }
+                        center = (float)((minLane - Globals.NumLanes / 2 + (maxLane - minLane) / 2.0f) * Globals.BeatToWorldXUnits);
                         noteObject.transform.position = new Vector3(center, 0, -5);
-                        noteObject.transform.localScale = new Vector3(flip * Globals.BaseShuffleScale / 16.0f * (maxLane - minLane), (float)(0.5 * GameState.ScrollSpeed * Globals.ShuffleNoteMultiplier), 1);
+                        noteObject.transform.localScale = new Vector3(flip * Globals.BaseShuffleScale / 16.0f * (maxLane - minLane), (float)(Globals.BaseNoteZScale * GameState.ScrollSpeed * Globals.ShuffleNoteMultiplier), 1);
                         quadObject.SetVerts(this, prevNote);
                         quadObject.transform.position = new Vector3(quadObject.XOffset, -0.0001f, -10);
                         lastSpeed = GameState.ScrollSpeed;
                         isScaleSet = true;
                     }
-                    float noteHeight = (float)(0.5 * lastSpeed * Globals.ShuffleNoteMultiplier);
-                    noteObject.transform.position = noteObject.transform.position.ModZ(beatLoc - curDist + (noteHeight - 0.5f) / 2);
+                    float noteHeight = (float)(Globals.BaseNoteZScale * lastSpeed * Globals.ShuffleNoteMultiplier);
+                    //noteObject.transform.position = noteObject.transform.position.ModZ(beatLoc - curDist + (noteHeight - 0.5f) / 2);
+                    noteObject.transform.position = noteObject.transform.position.ModZ(beatLoc - curDist + noteHeight / 2);
                     quadObject.transform.position = quadObject.transform.position.ModZ(beatLoc - curDist - quadObject.YOffset);
                     break;
                 default:
@@ -179,23 +166,17 @@ namespace StyleStar
                 case NoteType.Step:
                     noteObject = Side == Side.Left ? Pools.LeftStep.GetPooledObject() : Pools.RightStep.GetPooledObject();
                     noteObject.transform.position = new Vector3((float)Globals.CalcTransX(this), 0, -5);
-                    noteObject.transform.localScale = new Vector3(Globals.BaseNoteScale / 16.0f * Width, 0.5f, 1);
+                    noteObject.transform.localScale = new Vector3(Globals.BaseNoteScale / 16.0f * Width, Globals.BaseNoteZScale, 1);
                     isScaleSet = true;
 
                     noteObject.SetActive(true);
                     break;
                 case NoteType.Hold:
-                    //quadObject = Side == Side.Left ? Pools.LeftHold.GetPooledObject() : Pools.RightHold.GetPooledObject();
-                    //noteQuadObject = new NoteQuad(quadObject);
                     quadObject = new NoteQuad(Side == Side.Left ? Pools.LeftHold.GetPooledObject() : Pools.RightHold.GetPooledObject());
-                    //quadObject.SetVerts(this, prevNote);
                     quadObject.SetActive(true);
-                    //quadObject.SetActive(true);
                     break;
                 case NoteType.Slide:
-                    quadObject = new NoteQuad(Side == Side.Left ? Pools.LeftSlide.GetPooledObject() : Pools.RightSlide.GetPooledObject()); // FIXME use Slide when appropriate
-                    //quadObject.SetVerts(this, prevNote);
-                    //quadObject.transform.position = new Vector3(quadObject.XOffset, -0.0001f, -10);
+                    quadObject = new NoteQuad(Side == Side.Left ? Pools.LeftSlide.GetPooledObject() : Pools.RightSlide.GetPooledObject());
                     quadObject.SetActive(true);
                     break;
                 case NoteType.Shuffle:
@@ -224,79 +205,5 @@ namespace StyleStar
 
             texturesLoaded = true;
         }
-
-        private void GenerateTextureVerts(double currentBeat, Note prevNote)
-        {
-            //var curDist = (float)Globals.GetDistAtBeat(currentBeat);
-            //var beatLoc = (float)Globals.GetDistAtBeat(BeatLocation);
-
-            //var prevBeatLoc = (float)Globals.GetDistAtBeat(prevNote.BeatLocation);
-            //float upperLeftX = (float)Globals.CalcTransX(this, Side.Left);
-            //float upperRightX = (float)Globals.CalcTransX(this, Side.Right);
-            //float lowerLeftX = (float)Globals.CalcTransX(prevNote, Side.Left);
-            //float lowerRightX = (float)Globals.CalcTransX(prevNote, Side.Right);
-            //Vector3[] verts =
-            //{
-            //    new Vector3(lowerLeftX, 0, prevBeatLoc - curDist),
-            //    new Vector3(lowerRightX, 0, prevBeatLoc - curDist),
-            //    new Vector3(upperLeftX, 0, beatLoc - curDist),
-            //    new Vector3(upperRightX, 0, beatLoc - curDist),
-            //};
-            //var mesh = textureObject.GetComponent<MeshFilter>().sharedMesh;
-            //mesh.vertices = verts;
-        }
-
-        //public void Draw(double currentBeat, Matrix view, Matrix projection)
-        //{
-        //    // Don't draw if this was hit
-        //    if (HitResult.WasHit)
-        //        return;
-
-        //    if (Type == NoteType.Step)
-        //    {
-        //        //if (noteTexture == null)
-        //        //    noteTexture = new StepNoteTexture(this);
-        //        noteTexture.Draw(currentBeat, view, projection);
-        //    }
-        //    else if (Type == NoteType.Motion)
-        //    {
-        //        //if (noteTexture == null)
-        //        //    noteTexture = new MotionTexture(this);
-        //        noteTexture.Draw(currentBeat, view, projection);
-        //    }
-        //}
-
-        //public void Draw(double currentBeat, Matrix view, Matrix projection, Note prevNote, int overlapIndex = 0, NoteType type = NoteType.All)
-        //{
-        //    switch (Type)
-        //    {
-        //        case NoteType.Step:
-        //        case NoteType.Motion:
-        //            Draw(currentBeat, view, projection);
-        //            return;
-        //        case NoteType.Hold:
-        //            //if (bgTexture == null)
-        //            //    bgTexture = new MidNoteTexture(this, prevNote);
-        //            bgTexture.Draw(currentBeat, view, projection, overlapIndex);
-        //            break;
-        //        case NoteType.Slide:
-        //            //if (bgTexture == null)
-        //            //    bgTexture = new MidNoteTexture(this, prevNote);
-        //            bgTexture.Draw(currentBeat, view, projection, overlapIndex);
-        //            break;
-        //        case NoteType.Shuffle:
-        //            //if (bgTexture == null)
-        //            //    bgTexture = new MidNoteTexture(this, prevNote);
-        //            if (type == NoteType.All || type == NoteType.Hold || type == NoteType.Slide)
-        //                bgTexture.Draw(currentBeat, view, projection, overlapIndex);
-        //            //if (noteTexture == null)
-        //            //    noteTexture = new ShuffleNoteTexture(this, prevNote);
-        //            if (type == NoteType.All || type == NoteType.Shuffle)
-        //                ((ShuffleNoteTexture)noteTexture).Draw(currentBeat, view, projection, overlapIndex);
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //}
     }
 }

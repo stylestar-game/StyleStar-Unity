@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using UnityEngine;
 
 namespace StyleStar
 {
@@ -14,30 +15,39 @@ namespace StyleStar
 
         public static double NoteSpeed { get; set; } = 5;    // World units per second
         public static double BeatToWorldXUnits { get; set; } = 0.375;
-        public static double StepNoteHeightOffset { get; set; } = 5;
+        public static double StepNoteHeightOffset { get; set; } = 0.5;
         public static double ShuffleNoteHeightOffset { get; set; } = 7.5;
         public static double ShuffleNoteMultiplier { get; set; } = 0.666;
         public static double ShuffleXOffset { get; set; } = 0.7;
         public static double YOffset { get; set; } = 1;
         public static float OverlapMultplier { get; set; } = -0.02f;
         public static int NumLanes = 16;
-        public static float GradeZoneWidth { get; set; } = 48f;
+        public static float GradeZoneWidth { get; set; } = 6f;
         public static float NoteLaneAccentWidth { get; set; } = 3f;
+        public static float BaseNoteZScale { get; set; } = 0.52f;
         public static float BaseNoteScale { get; set; } = 0.555f;
         public static float BaseLanePosition { get; set; } = 2.0f;
         public static float BaseShuffleScale { get; set; } = 0.78f;
-        public static float BeatMarkerHeightOffset { get; set; } = 0.45f;
+        public static float BeatMarkerHeightOffset { get; set; } = 0.47f;
 
         public static float CurrentScalingFactor { get; set; } = 1.5f;
 
         public static float FootWidth { get; set; } = 4f;
 
+        public static float LoadingScreenTransitionTime = 0.5f;
+        public static float LoadingScreenWidth = 880f;
+
         //public static Vector2 Origin = new Vector2(0, 0);
         //public static Vector2 ItemOrigin = new Vector2(144, 212);
-        //public static Vector2 ItemOffset = new Vector2(-75, 130);
+        public static Vector2 CardOrigin = new Vector2(-288, 88);
+        public static Vector2 CardOffset = new Vector2(-75, -130);
 
         // public static double CurrentBpm { get; set; }
         public static List<BpmChangeEvent> BpmEvents { get; set; }
+
+        public static NoteCollection CurrentNoteCollection { get; set; }
+        public static SongMetadata CurrentSongMetadata { get; set; }
+        public static MusicManager MusicManager { get; set; } = new MusicManager();
 
         //public static Dictionary<string, Texture2D> Textures = new Dictionary<string, Texture2D>();
         //public static BasicEffect Effect;
@@ -56,14 +66,9 @@ namespace StyleStar
         //public static List<DrawCycleEventLog> DrawCycleLog = new List<DrawCycleEventLog>();
         //public static DrawCycleEventLog DrawTempLog;
 
-        public static double CalcTransX(Note note)
+        public static double CalcTransX(Note note, Side side = Side.NotSet)
         {
-            return CalcTransX(note, Side.NotSet);
-        }
-
-        public static double CalcTransX(Note note, Side side)
-        {
-            double del = note.Width / 2;
+            float del = note.Width / 2.0f;
             switch (side)
             {
                 case Side.Left:
@@ -77,12 +82,12 @@ namespace StyleStar
                     break;
             }
 
-            return (note.LaneIndex - NumLanes / 2 + del) * BeatToWorldXUnits;
+            return (note.LaneIndex - NumLanes / 2.0f + del) * BeatToWorldXUnits;
         }
 
         public static double CalcTransX(float index, float width, Side side)
         {
-            double del = width / 2;
+            double del = width / 2.0f;
             switch (side)
             {
                 case Side.Left:
@@ -96,7 +101,7 @@ namespace StyleStar
                     break;
             }
 
-            return (index - NumLanes / 2 + del) * BeatToWorldXUnits;
+            return (index - NumLanes / 2.0f + del) * BeatToWorldXUnits;
         }
 
         public static double GetDistAtBeat(double beat)
@@ -226,8 +231,11 @@ namespace StyleStar
 
     public static class GameState
     {
-        public static Mode GameMode { get; set; } = Mode.GamePlay;
+        public static Mode GameMode { get; set; } = Mode.SongSelect;
+        public static Mode Destination { get; set; } = Mode.SongSelect;
         public static double ScrollSpeed { get; set; } = 3.0;
+        public static TransitionState TransitionState { get; set; } = TransitionState.ScreenActive;
+        public static Settings CurrentSettings { get; set; } = new Settings() { AutoSetting = Settings.AutoMode.Auto };
     }
 
     public enum Motion
@@ -261,7 +269,16 @@ namespace StyleStar
         SongSelect,
         Loading,
         GamePlay,
-        Results
+        Results,
+        NoSongs
+    }
+
+    public enum TransitionState
+    {
+        LeavingLoadScreen,
+        ScreenActive,
+        EnteringLoadingScreen,
+        SwitchingScreens
     }
 
     public enum Difficulty

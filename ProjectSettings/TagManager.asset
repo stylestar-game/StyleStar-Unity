@@ -38,6 +38,33 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 2610190321
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: BeatMarks
+    uniqueID: 689232973
+    locked: 0
+  - name: Feet
+    uniqueID: 266338493
+    locked: 0
+  - name: LeftHold
+    uniqueID: 2036711013
+    locked: 0
+  - name: RightHold
+    uniqueID: 3869416545
+    locked: 0
+  - name: LeftShuffle
+    uniqueID: 672463027
+    locked: 0
+  - name: RightShuffle
+    uniqueID: 1406026237
+    locked: 0
+  - name: Motion
+    uniqueID: 3703546281
+    locked: 0
+  - name: Steps
+    uniqueID: 1205395205
     locked: 0
