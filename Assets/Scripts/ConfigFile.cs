@@ -16,19 +16,6 @@ public static class ConfigFile
         // TODO: Make magic numbers for configs into constants defined in this class
         TomlTable tomlConfigTable = Toml.Create();
 
-        Dictionary<string, object> keyConfigDict = new Dictionary<string, object>();
-        keyConfigDict.Add("Left", 37);
-        keyConfigDict.Add("Right", 39);
-        keyConfigDict.Add("Up", 38);
-        keyConfigDict.Add("Down", 40);
-        keyConfigDict.Add("Exit", 115);
-        keyConfigDict.Add("Back", 27);
-        keyConfigDict.Add("Back2", 8);
-        keyConfigDict.Add("Auto", 113);
-        keyConfigDict.Add("Select", 13);
-        keyConfigDict.Add("GameOptions", 112);
-        tomlConfigTable.Add("KeyConfig", keyConfigDict);
-
         Dictionary<string, object> touchConfigDict = new Dictionary<string, object>();
         touchConfigDict.Add("WidthAxis", 1);
         touchConfigDict.Add("CalMinX", 0);
@@ -61,8 +48,6 @@ public static class ConfigFile
 
         configTable = Toml.ReadFile(Defines.ConfigFile).ToDictionary();
 
-        //if (configTable.ContainsKey(Defines.KeyConfig))
-        //    InputMonitor.SetKeys((Dictionary<string, object>)configTable[Defines.KeyConfig]);
         if (configTable.ContainsKey(Defines.TouchConfig))
             TouchSettings.SetConfig((Dictionary<string, object>)configTable[Defines.TouchConfig]);
         //if (configTable.ContainsKey(Defines.GameConfig))
@@ -76,7 +61,6 @@ public static class ConfigFile
     {
         configTable = new Dictionary<string, object>()
             {
-                //{Defines.KeyConfig, InputMonitor.GetConfig() },
                 {Defines.TouchConfig, TouchSettings.GetConfig() },
                 //{Defines.GameConfig, GameSettingsScreen.GetConfig() }
             };
@@ -89,7 +73,6 @@ public static class ConfigFile
 
         var data = new Dictionary<string, object>()
             {
-                //{Defines.KeyConfig, InputMonitor.GetConfig() },
                 {Defines.TouchConfig, TouchSettings.GetConfig() },
                 //{Defines.GameConfig, GameSettingsScreen.GetConfig() }
             };
