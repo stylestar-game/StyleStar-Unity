@@ -58,7 +58,7 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
-Songs*/
+Songs/
 
 StyleStarLog*
 config.toml
