@@ -23,13 +23,16 @@ namespace StyleStar
 
         public SettingOption(string title, string[] options)
         {
-            optionObj = Pools.GameSettingOptions.GetPooledObject();
-
             Title = title;
+            Options.AddRange(options);
+            InitializeOptionObj();
+        }
+
+        public void InitializeOptionObj()
+        {
+            optionObj = Pools.GameSettingOptions.GetPooledObject();
             var titleObj = optionObj.GetComponent<TextMeshProUGUI>();
             titleObj.text = Title;
-            Options.AddRange(options);
-
             optionObj.SetActive(true);
         }
 

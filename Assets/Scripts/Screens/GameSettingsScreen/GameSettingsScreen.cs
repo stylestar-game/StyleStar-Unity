@@ -49,6 +49,12 @@ namespace StyleStar
                 };
                 isInitialized = true;
             }
+            else
+            {
+                // We need to do this because the pool gets deleted every time we exit from this menu.
+                foreach (var option in options)
+                    option.InitializeOptionObj();
+            }
         }
 
         public static void Draw()
