@@ -7,7 +7,6 @@
         public static readonly string ZipExtension = ".ssz";
 
         public static readonly string ConfigFile = "config.toml";
-        public static readonly string KeyConfig = "KeyConfig";
         public static readonly string TouchConfig = "TouchConfig";
         public static readonly string GameConfig = "GameConfig";
 
