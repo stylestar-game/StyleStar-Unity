@@ -29,8 +29,15 @@ public class GameSettingsScreenInputs : MonoBehaviour
             GameSettingsScreen.ScrollRight();
         else if (Input.GetButtonDown("Select"))
         {
-            if (GameSettingsScreen.Select() != DialogResult.NoAction)
+            DialogResult gameSettingResult = GameSettingsScreen.Select();
+            if (gameSettingResult != DialogResult.NoAction)
             {
+                // save the TOML file here
+                if (gameSettingResult == DialogResult.Confirm)
+                {
+                    ConfigFile.Update();
+                    ConfigFile.Save();
+                }
                 GameState.TransitionState = TransitionState.EnteringLoadingScreen;
                 GameState.Destination = Mode.SongSelect;
             }

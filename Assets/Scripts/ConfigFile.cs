@@ -50,8 +50,6 @@ public static class ConfigFile
 
         if (configTable.ContainsKey(Defines.TouchConfig))
             TouchSettings.SetConfig((Dictionary<string, object>)configTable[Defines.TouchConfig]);
-        //if (configTable.ContainsKey(Defines.GameConfig))
-        //    GameSettingsScreen.SetConfig((Dictionary<string, object>)configTable[Defines.GameConfig]);
 
         IsLoaded = true;
         return true;
@@ -62,7 +60,7 @@ public static class ConfigFile
         configTable = new Dictionary<string, object>()
             {
                 {Defines.TouchConfig, TouchSettings.GetConfig() },
-                //{Defines.GameConfig, GameSettingsScreen.GetConfig() }
+                {Defines.GameConfig, GameSettingsScreen.GetConfig() }
             };
     }
 
@@ -71,15 +69,8 @@ public static class ConfigFile
         if (!String.IsNullOrEmpty(filepath))
             FilePath = filepath;
 
-        var data = new Dictionary<string, object>()
-            {
-                {Defines.TouchConfig, TouchSettings.GetConfig() },
-                //{Defines.GameConfig, GameSettingsScreen.GetConfig() }
-            };
-        Toml.WriteFile(data, Defines.ConfigFile);
-
-        // Should this go here? I don't see why we would save if we didn't want to apply it immediately
-        //UpdateGlobals();
+        File.Delete(Defines.ConfigFile); // delete file before writing another TOML file
+        Toml.WriteFile(configTable, Defines.ConfigFile);
     }
 
     //public Dictionary<string, object> this[string key]

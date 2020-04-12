@@ -46,11 +46,8 @@ public class GameSettingsScreenDisplay : MonoBehaviour
         Bg2.SetColor(ThemeColors.Blue);
         Bg3.SetColor(ThemeColors.Yellow);
 
-        if(Pools.GameSettingOptions == null)
-        {
-            Pools.GameSettingOptions = ScriptableObject.CreateInstance<ObjectPooler>();
-            Pools.GameSettingOptions.SetPool(OptionBase, 10, true, this.gameObject);
-        }
+        Pools.GameSettingOptions = ScriptableObject.CreateInstance<ObjectPooler>();
+        Pools.GameSettingOptions.SetPool(OptionBase, 10, true, this.gameObject);
 
         GameSettingsScreen.Initialize(Selection, ConfirmReject);
         GameSettingsScreen.SetConfig(ConfigFile.GetTable(Defines.GameConfig));
