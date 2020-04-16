@@ -53,8 +53,9 @@ public class GameplayInputs : MonoBehaviour
 
                 if (touch.fingerId == 0)    // Ignore fingerId = 0 because this is treated as a mouse click
                     continue;
-
+#if DEBUG
                 Debug.Log("Point: " + touch.fingerId.ToString() + "\tX: " + touch.position.x.ToString() + "\tY: " + touch.position.y.ToString());
+#endif
 
                 switch (touch.phase)
                 {
