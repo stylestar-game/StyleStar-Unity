@@ -47,4 +47,10 @@ public static partial class Util
         for (int i = 0; i < list.Count; i++)
             list[i].SetActive(active);
     }
+
+    public static Rect GetScreenRect()
+    {
+        Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+        return canvas ? canvas.pixelRect : new Rect();
+    }
 }

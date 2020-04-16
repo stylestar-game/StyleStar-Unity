@@ -3,6 +3,7 @@ using StyleStar;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 public static class ConfigFile
 {
@@ -16,20 +17,23 @@ public static class ConfigFile
         // TODO: Make magic numbers for configs into constants defined in this class
         TomlTable tomlConfigTable = Toml.Create();
 
+        Rect screenRect = Util.GetScreenRect();
+        Boolean bEmptyRect = screenRect.width == 0 || screenRect.height == 0;
+
         Dictionary<string, object> touchConfigDict = new Dictionary<string, object>();
-        touchConfigDict.Add("WidthAxis", 1);
-        touchConfigDict.Add("CalMinX", 0);
-        touchConfigDict.Add("CalMaxX", 1280);
-        touchConfigDict.Add("CalMinY", 0);
-        touchConfigDict.Add("CalMaxY", 720);
-        touchConfigDict.Add("AbsX", 1024);
-        touchConfigDict.Add("AbsY", 1024);
+        touchConfigDict.Add("WidthAxis", 0/*along positive x-axis*/);
+        touchConfigDict.Add("CalMinX", !bEmptyRect ? screenRect.xMin : 0);
+        touchConfigDict.Add("CalMaxX", !bEmptyRect ? screenRect.xMax : 1280);
+        touchConfigDict.Add("CalMinY", !bEmptyRect ? screenRect.yMin : 0);
+        touchConfigDict.Add("CalMaxY", !bEmptyRect ? screenRect.yMax : 720);
+        touchConfigDict.Add("AbsX", !bEmptyRect ? screenRect.width : 1024);
+        touchConfigDict.Add("AbsY", !bEmptyRect ? screenRect.height : 1024);
         tomlConfigTable.Add("TouchConfig", touchConfigDict);
 
         Dictionary<string, object> gameConfigDict = new Dictionary<string, object>();
         gameConfigDict.Add("Language", 0);
         gameConfigDict.Add("Resolution", 0);
-        gameConfigDict.Add("TouchScreenOrientation", 1);
+        gameConfigDict.Add("TouchScreenOrientation", 0);
         gameConfigDict.Add("EnableFreePlay", true);
         gameConfigDict.Add("AutoMode", 0);
         tomlConfigTable.Add("GameConfig", gameConfigDict);
