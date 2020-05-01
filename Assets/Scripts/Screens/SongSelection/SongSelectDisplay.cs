@@ -91,7 +91,7 @@ public class SongSelectDisplay : MonoBehaviour
                 UpdateMetadata(false);
 
                 for (int i = 0; i < folderCards.Count; i++)
-                    folderCards[i].Shift(i, SongSelection.CurrentFolderIndex);
+                    folderCards[i].Shift(i, SongSelection.CurrentFolderIndex, SongSelectionMovement.IsAnimating(), SongSelectionMovement.AnimationMovement.x, SongSelectionMovement.AnimationMovement.y);
             }
             else if (SongSelection.FolderParams[SongSelection.SelectedFolderIndex].Type == SortType.Level && SongSelection.SelectedLevelIndex == -1)
             {
@@ -101,7 +101,7 @@ public class SongSelectDisplay : MonoBehaviour
                 UpdateMetadata(false);
 
                 for (int i = 0; i < levelCards.Count; i++)
-                    levelCards[i].Shift(i, SongSelection.CurrentLevelIndex);
+                    levelCards[i].Shift(i, SongSelection.CurrentLevelIndex, SongSelectionMovement.IsAnimating(), SongSelectionMovement.AnimationMovement.x, SongSelectionMovement.AnimationMovement.y);
             }
             else
             {
@@ -114,7 +114,7 @@ public class SongSelectDisplay : MonoBehaviour
                 {
                     var card = songCards.FirstOrDefault(x => ((SongCard)x).SongID == SongSelection.Songlist[i].SongID);
 
-                    card.Shift(i, SongSelection.CurrentSongIndex);
+                    card.Shift(i, SongSelection.CurrentSongIndex, SongSelectionMovement.IsAnimating(), SongSelectionMovement.AnimationMovement.x, SongSelectionMovement.AnimationMovement.y);
                     int diff = i == SongSelection.CurrentSongIndex ? SongSelection.CurrentSongLevelIndex : -1;
                     ((SongCard)card).SetDifficulty(diff);
                 }

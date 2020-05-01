@@ -15,9 +15,12 @@ public class CardBase
         cardObj.SetActive(true);
     }
 
-    public void Shift(int cardIndex, int currentIndex)
+    public void Shift(int cardIndex, int currentIndex, bool isAnimating = false, float movementX = 0.0f, float movementY = 0.0f)
     {
-        cardObj.GetComponent<RectTransform>().anchoredPosition = Globals.CardOrigin + (cardIndex - currentIndex) * Globals.CardOffset;
+        if (!isAnimating)
+            cardObj.GetComponent<RectTransform>().anchoredPosition = Globals.CardOrigin + ((cardIndex - currentIndex) * Globals.CardOffset);
+        else
+            cardObj.GetComponent<RectTransform>().anchoredPosition += new Vector2(movementX, movementY);
     }
 
     public void SetActive(bool active)

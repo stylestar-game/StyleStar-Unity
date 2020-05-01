@@ -2,6 +2,40 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine;
+
+public static class SongSelectionMovement
+{
+    public static void SongMovementBefore(int currentSongIndex, int currentFolderIndex, int currentLevelIndex, Vector2 animationMovement)
+    {
+        CurrentSongIndex = currentSongIndex;
+        CurrentFolderIndex = currentFolderIndex;
+        CurrentLevelIndex = currentLevelIndex;
+        AnimationMovement = animationMovement*ScrollSpeed;
+    }
+
+    public static void SongMovementAfter(int currentSongIndex, int currentFolderIndex,
+        int currentLevelIndex)
+    {
+        if (CurrentSongIndex != currentSongIndex || CurrentFolderIndex != currentFolderIndex ||
+            CurrentLevelIndex != currentLevelIndex)
+            AnimationFrameCount = 0;
+    }
+
+    private static int CurrentSongIndex { get; set; } = 0;
+    private static int CurrentFolderIndex { get; set; } = 0;
+    private static int CurrentLevelIndex { get; set; } = 0;
+    private static int AnimationFrameCount{ get; set; } = 10;
+
+    public static Vector2 AnimationMovement { get; set; } = new Vector2(0, 0); // direction to move the 
+    public static bool IsAnimating() { return AnimationFrameCount < MaxNumTransitionFrames; }
+    public static void IncrementFrame() { AnimationFrameCount += 1; }
+
+    // NOTE: ScrollSpeed * MaxNumTransitionFrames should be equal to 1 to maintain the current spacing of the menus.
+    private const float ScrollSpeed = 0.1f;
+    public const int MaxNumTransitionFrames = 10;
+
+};
 
 public static class SongSelection
 {
@@ -53,6 +87,7 @@ public static class SongSelection
 
     public static void ScrollDown()
     {
+        SongSelectionMovement.SongMovementBefore(CurrentSongIndex, CurrentFolderIndex, CurrentLevelIndex, -Globals.CardOffset);
         if (SelectedFolderIndex == -1)
             CurrentFolderIndex = CurrentFolderIndex < (FolderParams.Count - 1) ? ++CurrentFolderIndex : FolderParams.Count - 1;
         else if (FolderParams[SelectedFolderIndex].Type == SortType.Level && SelectedLevelIndex == -1)
@@ -61,11 +96,13 @@ public static class SongSelection
         {
             CurrentSongIndex = CurrentSongIndex < (Songlist.Count - 1) ? ++CurrentSongIndex : Songlist.Count - 1;
         //UpdateMetaLabels(); // FIXME
+        }
+        SongSelectionMovement.SongMovementAfter(CurrentSongIndex, CurrentFolderIndex, CurrentLevelIndex);
     }
-}
 
     public static void ScrollUp()
     {
+        SongSelectionMovement.SongMovementBefore(CurrentSongIndex, CurrentFolderIndex, CurrentLevelIndex, Globals.CardOffset);
         if (SelectedFolderIndex == -1)
             CurrentFolderIndex = CurrentFolderIndex > 0 ? --CurrentFolderIndex : 0;
         else if (FolderParams[SelectedFolderIndex].Type == SortType.Level && SelectedLevelIndex == -1)
@@ -74,8 +111,9 @@ public static class SongSelection
         {
             CurrentSongIndex = CurrentSongIndex > 0 ? --CurrentSongIndex : 0;
         //UpdateMetaLabels(); // FIXME
+        }
+        SongSelectionMovement.SongMovementAfter(CurrentSongIndex, CurrentFolderIndex, CurrentLevelIndex);
     }
-}
 
     public static void GoBack()
     {

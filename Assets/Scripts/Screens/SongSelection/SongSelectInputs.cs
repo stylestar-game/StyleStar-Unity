@@ -14,10 +14,17 @@ public class SongSelectInputs : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Prevent inputs while the game is transitioning between screens
+        // Prevent inputs while the game is transitioning between screens or cards
         if (GameState.TransitionState == TransitionState.EnteringLoadingScreen ||
             GameState.TransitionState == TransitionState.LeavingLoadScreen)
             return;
+
+        // Prevent inputs while the menus are animating
+        if (SongSelectionMovement.IsAnimating())
+        {
+            SongSelectionMovement.IncrementFrame(); // increment by one frame
+            return;
+        }
 
         if (Input.GetButtonDown("Down"))
             SongSelection.ScrollDown();
