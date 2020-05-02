@@ -63,7 +63,14 @@ namespace StyleStar
             try
             {
                 ChartFullPath = Path.GetFullPath(fileName);
+
+                // forward slashes before file name are needed on Unix based systems; backward slashes before file name are needed on Windows
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
                 FilePath = Path.GetDirectoryName(fileName) + @"\";
+#else
+                FilePath = Path.GetDirectoryName(fileName) + @"/";
+#endif
+
                 List<string> children = new List<string>();
                 using (StreamReader sr = new StreamReader(new FileStream(fileName, FileMode.Open, FileAccess.Read)))
                 {
