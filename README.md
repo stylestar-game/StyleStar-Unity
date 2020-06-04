@@ -1,13 +1,18 @@
 # StyleStar-Unity
 
 **StyleStar** is a rhythm game that aims to reproduce the features of Dance Rush Stardom (from BEMANI) and add new features on top.
+
+### Just here to play?
+
+Mosey on over to our [Discord server](https://discord.gg/sZ2jJKE), or look at [our wiki](https://github.com/stylestar-game/StyleStar-Unity/wiki/EN%3A-Getting-Started) for help!
+
+日本語しか分からない？ [Discordサーバー](https://discord.gg/sZ2jJKE)では日本語の質問ができますし、[Wiki](https://github.com/stylestar-game/StyleStar-Unity/wiki/JA%3A-%E3%81%AF%E3%81%98%E3%82%81%E3%81%AB)は日本語対応ですよ！
  
 ### Some Notes
 
 This was developed using Unity version 2018.4.15f1, it can currently be used with Unity 2018.04.20f1 without issue. 
 The build is not currently compatible with later editions of Unity, but there will be upgrade relatively soon.
 StyleStar is also only compatible on Windows, but we hope to change this in the future as well.
-
 
 ### Project Setup
 
@@ -17,7 +22,6 @@ StyleStar is also only compatible on Windows, but we hope to change this in the 
 
 NOTE: It's possible for text to not show in the game. This is because all text fields are blank in the project and you have to set them manually. This will be fixed. 
 
- 
 ### Unzip font asset file!
 
 In `Assets/Fonts`, unzip `librefranklin-mplus SDF.zip` right to the same folder, so the `*.asset` file is here.
@@ -31,4 +35,4 @@ Official Twitter: [@PlayStyleStar](https://twitter.com/PlayStyleStar)
 
 **[Libre Franklin](https://www.fontsquirrel.com/fonts/libre-franklin)** font designed by Impallari Type. Released under the SIL Open Font License v1.10.
 
-**[Running Start Premium](https://creativemarket.com/theFIZZYnator/3816767-Running-Start-Dynamic-Geo-Sans)** font designed by UkiyoMoji Fonts. Licensed indefinitely, exclusively for use on the StyleStar project.
+**[Running Start Premium](https://creativemarket.com/theFIZZYnator/3816767-Running-Start-Dynamic-Geo-Sans)** font designed by UkiyoMoji Fonts. Licensed indefinitely, commissioned exclusively for use on the StyleStar project.
