@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Un4seen.Bass;
+using UnityEngine;
 
 namespace StyleStar
 {
     public class MusicManager
     {
+        private const float LOOP_DURATION = 15.0f;
+        private const float VOLUME_DIVIDEND = 1000.0f;
         private int streamHandle = -1;
 
         public bool IsPlaying { get { return Bass.BASS_ChannelIsActive(streamHandle) == BASSActive.BASS_ACTIVE_PLAYING; } }
@@ -61,6 +63,11 @@ namespace StyleStar
             Bass.BASS_ChannelPause(streamHandle);
         }
 
+        public void Stop()
+        {
+            Bass.BASS_ChannelStop(streamHandle);
+        }
+
         public double GetCurrentSec()
         {
             var pos = Bass.BASS_ChannelGetPosition(streamHandle);
@@ -77,6 +84,59 @@ namespace StyleStar
             if (evt == null)
                 evt = Globals.BpmEvents[0];
             return (evt.BPM * (sec - evt.StartSeconds) / 60) + evt.StartBeat;
+        }
+
+        // Manage looping a song with the functions below.
+        private void FadeOutAndReset(long beginningOffset)
+        {
+            if (IsPlaying)
+            {
+                float currSongVol = Bass.BASS_GetVolume();
+                float fadeSongVol = currSongVol;
+                float volDecrement = currSongVol / VOLUME_DIVIDEND;
+                while (fadeSongVol > 0)
+                {
+                    fadeSongVol -= volDecrement;
+                    Bass.BASS_SetVolume(fadeSongVol);
+                }
+
+                // Reset to given offset here
+                Bass.BASS_ChannelSetPosition(streamHandle, beginningOffset);
+                Bass.BASS_SetVolume(currSongVol);
+            }
+        }
+
+        private IEnumerator MonitorSongLoop(long beginningOffset, double startSec)
+        {
+            while (IsPlaying)
+            {
+                double diffSec = Bass.BASS_ChannelBytes2Seconds(streamHandle, Bass.BASS_ChannelGetPosition(streamHandle)) - startSec;
+                if (diffSec > LOOP_DURATION)
+                    FadeOutAndReset(beginningOffset);
+                yield return null;
+            }
+
+            yield return null;
+        }
+
+        public void BeginSongLoop(string filename, long beginningOffset, MonoBehaviour parentCaller)
+        {
+            streamHandle = Bass.BASS_StreamCreateFile(filename, beginningOffset, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_STREAM_PRESCAN);
+            if (streamHandle != 0)
+            {
+                Play();
+                double startSec = Bass.BASS_ChannelBytes2Seconds(streamHandle, Bass.BASS_ChannelGetPosition(streamHandle));
+                parentCaller.StartCoroutine(MonitorSongLoop(beginningOffset, startSec));
+            }
+        }
+
+        public void EndSongLoop(MonoBehaviour parentCaller)
+        {
+            if (IsPlaying)
+            {
+                Stop();
+                parentCaller.StopCoroutine("MonitorSongLoop");
+            }
         }
     }
 }

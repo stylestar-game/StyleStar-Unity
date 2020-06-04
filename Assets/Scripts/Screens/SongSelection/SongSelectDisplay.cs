@@ -22,6 +22,7 @@ public class SongSelectDisplay : MonoBehaviour
     private bool init = false;
     private bool loadStarted = false;
     private bool transitionFinished;
+    private int currentSongIndex = -1;
 
     private void Awake()
     {
@@ -89,34 +90,40 @@ public class SongSelectDisplay : MonoBehaviour
                 levelCards.SetActive(false);
                 songCards.SetActive(false);
                 UpdateMetadata(false);
+                UpdateLoopedSong(true);
 
                 for (int i = 0; i < folderCards.Count; i++)
                     folderCards[i].Shift(i, SongSelection.CurrentFolderIndex, SongSelectionMovement.IsAnimating(), SongSelectionMovement.AnimationMovement.x, SongSelectionMovement.AnimationMovement.y);
             }
-            else if (SongSelection.FolderParams[SongSelection.SelectedFolderIndex].Type == SortType.Level && SongSelection.SelectedLevelIndex == -1)
-            {
-                folderCards.SetActive(false);
-                levelCards.SetActive(true);
-                songCards.SetActive(false);
-                UpdateMetadata(false);
-
-                for (int i = 0; i < levelCards.Count; i++)
-                    levelCards[i].Shift(i, SongSelection.CurrentLevelIndex, SongSelectionMovement.IsAnimating(), SongSelectionMovement.AnimationMovement.x, SongSelectionMovement.AnimationMovement.y);
-            }
             else
             {
-                folderCards.SetActive(false);
-                levelCards.SetActive(false);
-                songCards.SetActive(true);
-                UpdateMetadata(true);
-
-                for (int i = 0; i < SongSelection.Songlist.Count; i++)
+                if (SongSelection.FolderParams[SongSelection.SelectedFolderIndex].Type == SortType.Level && SongSelection.SelectedLevelIndex == -1)
                 {
-                    var card = songCards.FirstOrDefault(x => ((SongCard)x).SongID == SongSelection.Songlist[i].SongID);
+                    folderCards.SetActive(false);
+                    levelCards.SetActive(true);
+                    songCards.SetActive(false);
+                    UpdateMetadata(false);
+                    UpdateLoopedSong(true);
 
-                    card.Shift(i, SongSelection.CurrentSongIndex, SongSelectionMovement.IsAnimating(), SongSelectionMovement.AnimationMovement.x, SongSelectionMovement.AnimationMovement.y);
-                    int diff = i == SongSelection.CurrentSongIndex ? SongSelection.CurrentSongLevelIndex : -1;
-                    ((SongCard)card).SetDifficulty(diff);
+                    for (int i = 0; i < levelCards.Count; i++)
+                        levelCards[i].Shift(i, SongSelection.CurrentLevelIndex, SongSelectionMovement.IsAnimating(), SongSelectionMovement.AnimationMovement.x, SongSelectionMovement.AnimationMovement.y);
+                }
+                else
+                {
+                    folderCards.SetActive(false);
+                    levelCards.SetActive(false);
+                    songCards.SetActive(true);
+                    UpdateMetadata(true);
+                    UpdateLoopedSong(false);
+
+                    for (int i = 0; i < SongSelection.Songlist.Count; i++)
+                    {
+                        var card = songCards.FirstOrDefault(x => ((SongCard)x).SongID == SongSelection.Songlist[i].SongID);
+
+                        card.Shift(i, SongSelection.CurrentSongIndex, SongSelectionMovement.IsAnimating(), SongSelectionMovement.AnimationMovement.x, SongSelectionMovement.AnimationMovement.y);
+                        int diff = i == SongSelection.CurrentSongIndex ? SongSelection.CurrentSongLevelIndex : -1;
+                        ((SongCard)card).SetDifficulty(diff);
+                    }
                 }
             }
         }
@@ -150,6 +157,9 @@ public class SongSelectDisplay : MonoBehaviour
                 {
                     Globals.CurrentNoteCollection = new NoteCollection(SongSelection.GetSelectedMetadata());
                     Globals.CurrentSongMetadata = Globals.CurrentNoteCollection.ParseFile();
+
+                    // If music is currently looping, cease it now.
+                    Globals.MusicManager.EndSongLoop(this);
 
                     Globals.MusicManager.LoadSong(Globals.CurrentSongMetadata.FilePath + Globals.CurrentSongMetadata.SongFilename, Globals.CurrentSongMetadata.BpmEvents);
                     Globals.MusicManager.Offset = Globals.CurrentSongMetadata.PlaybackOffset * 1000;
@@ -212,5 +222,22 @@ public class SongSelectDisplay : MonoBehaviour
         this.transform.Find("ArtistText").gameObject.SetText(currentMeta.Artist);
         this.transform.Find("BPMText").gameObject.SetText(bpm + " BPM");
         this.transform.Find("ChoreoText").gameObject.SetText("Choreo: " + currentMeta.GetPropertyFromChild("Designer", SongSelection.CurrentSongLevelIndex));
+    }
+
+    private void UpdateLoopedSong(bool endSong)
+    {
+        if (endSong)
+        {
+            Globals.MusicManager.EndSongLoop(this);
+            currentSongIndex = -1;
+        }
+        else if (!endSong && currentSongIndex != SongSelection.CurrentSongIndex)
+        {
+            Globals.MusicManager.EndSongLoop(this);
+            var filename = SongSelection.Songlist[SongSelection.CurrentSongIndex].FilePath + SongSelection.Songlist[SongSelection.CurrentSongIndex].SongFilename;
+            var offset = SongSelection.Songlist[SongSelection.CurrentSongIndex].PlaybackOffset;
+            Globals.MusicManager.BeginSongLoop(filename, (long)offset, this);
+            currentSongIndex = SongSelection.CurrentSongIndex;
+        }
     }
 }
