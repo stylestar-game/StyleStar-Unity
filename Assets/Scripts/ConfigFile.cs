@@ -39,8 +39,6 @@ public static class ConfigFile
             case 0:
             default: LocalizedLanguage = Language.English; break;
         }
-
-        LocalizedLanguage = Language.Japanese;
     }
 
     private static void CreateConfigFile()
