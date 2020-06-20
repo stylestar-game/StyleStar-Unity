@@ -302,4 +302,12 @@ namespace StyleStar
         Confirm,
         Cancel
     }
+
+    public enum Language
+    {
+        English,
+        Spanish,
+        Japanese,
+        French
+    }
 }

@@ -101,12 +101,15 @@ public class ResultScreenDisplay : MonoBehaviour
         {
             childMeta = meta.ChildMetadata.FirstOrDefault(x => (int)x.Difficulty == SongSelection.CurrentSongLevelIndex);
         }
+        this.transform.Find("ResultsHeader").gameObject.SetText(ConfigFile.GetLocalizedString("Results"));
         this.transform.Find("TitleText").gameObject.SetText(meta.Title);
         this.transform.Find("ArtistText").gameObject.SetText(meta.Artist);
         this.transform.Find("DifficultyText").gameObject.SetText(
             childMeta != null ?
             childMeta.Difficulty.ToString() + " Lv." + childMeta.Level.ToString("D2") :
             meta.Difficulty.ToString() + " Lv." + meta.Level.ToString("D2"));
+        
+        this.transform.Find("AccuracyLabel").gameObject.SetText(ConfigFile.GetLocalizedString("Accuracy"));
 
         var noteCollection = Globals.CurrentNoteCollection;
         var score = noteCollection.CurrentScore / noteCollection.TotalNotes * 100.00f;
@@ -123,13 +126,13 @@ public class ResultScreenDisplay : MonoBehaviour
         switch (noteCollection.SongEnd)
         {
             case SongEndReason.Cleared:
-                this.transform.Find("Grading").gameObject.SetText("Cleared");
+                this.transform.Find("Grading").gameObject.SetText(ConfigFile.GetLocalizedString("Cleared"));
                 break;
             case SongEndReason.Failed:
-                this.transform.Find("Grading").gameObject.SetText("Failed");
+                this.transform.Find("Grading").gameObject.SetText(ConfigFile.GetLocalizedString("Failed"));
                 break;
             default:
-                this.transform.Find("Grading").gameObject.SetText("Forfeit");
+                this.transform.Find("Grading").gameObject.SetText(ConfigFile.GetLocalizedString("Forfeit"));
                 break;
         }
 
@@ -139,6 +142,10 @@ public class ResultScreenDisplay : MonoBehaviour
         grading.transform.Find("CoolCount").gameObject.SetText(noteCollection.GreatCount.ToString("D4"));
         grading.transform.Find("GoodCount").gameObject.SetText(noteCollection.GoodCount.ToString("D4"));
         grading.transform.Find("MissCount").gameObject.SetText(noteCollection.MissCount.ToString("D4"));
+        grading.transform.Find("StylishLabel").gameObject.SetText(ConfigFile.GetLocalizedString("Stylish"));
+        grading.transform.Find("CoolLabel").gameObject.SetText(ConfigFile.GetLocalizedString("Cool"));
+        grading.transform.Find("GoodLabel").gameObject.SetText(ConfigFile.GetLocalizedString("Good"));
+        grading.transform.Find("MissLabel").gameObject.SetText(ConfigFile.GetLocalizedString("Miss"));
 
         // Set line colors
         this.transform.Find("BgLine3").gameObject.SetColor(meta.ColorAccent.IfNull(ThemeColors.BrightGreen));

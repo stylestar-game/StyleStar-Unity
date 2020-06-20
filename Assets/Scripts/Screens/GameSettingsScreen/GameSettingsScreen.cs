@@ -40,12 +40,17 @@ namespace StyleStar
             if (!isInitialized)
             {
                 options = new List<SettingOption>() {
-                    new SettingOption("LANGUAGE", new string[] { "English", "Open language select..." }),
-                    new SettingOption("SCREEN RESOLUTION", new string[] { "640x360", "1280x720", "1920x1080" }),
-                    new SettingOption("TOUCH SCREEN ORIENTATION", new string[] { "Horizontal (0°)", "Vertical (90°)", "Horizontal (180°)", "Vertical (270°)" }),
-                    new SettingOption("ENABLE FREE PLAY", new string[] { "ON", "OFF" }),
-                    new SettingOption("AUTO MODE", new string[] { "OFF", "ON", "DOWN ONLY" }),
-                    new SettingOption("", new string[] { "Save and Exit", "Leave without Saving" })
+                    new SettingOption(ConfigFile.GetLocalizedString("Lang_Title"), new string[] { ConfigFile.GetLocalizedString("Lang_Name"),
+                        ConfigFile.GetLocalizedString("Lang_Open") }),
+                    new SettingOption(ConfigFile.GetLocalizedString("Screen_Res"), new string[] { "640x360", "1280x720", "1920x1080" }),
+                    new SettingOption(ConfigFile.GetLocalizedString("Touch_Res"), new string[] {
+                        ConfigFile.GetLocalizedString("Hor_0"), ConfigFile.GetLocalizedString("Ver_90"),
+                        ConfigFile.GetLocalizedString("Hor_180"), ConfigFile.GetLocalizedString("Ver_270")
+                    }),
+                    new SettingOption(ConfigFile.GetLocalizedString("En_Free"), new string[] { ConfigFile.GetLocalizedString("On"), ConfigFile.GetLocalizedString("Off") }),
+                    new SettingOption(ConfigFile.GetLocalizedString("Auto_Mode_2"), new string[] { ConfigFile.GetLocalizedString("Off"),
+                        ConfigFile.GetLocalizedString("On"), ConfigFile.GetLocalizedString("Down_Only") }),
+                    new SettingOption("", new string[] { ConfigFile.GetLocalizedString("Save_Exit"), ConfigFile.GetLocalizedString("Leave_No_Save") })
                 };
                 isInitialized = true;
             }
@@ -69,9 +74,9 @@ namespace StyleStar
             if (confirmSelection)
             {
                 if (options[5].SelectedOption == 0)
-                    confirmRejectLabel.SetText("Press SELECT again to confirm changes.");
+                    confirmRejectLabel.SetText(ConfigFile.GetLocalizedString("Select_Confirm"));
                 else
-                    confirmRejectLabel.SetText("Press SELECT again to discard changes.");
+                    confirmRejectLabel.SetText(ConfigFile.GetLocalizedString("Select_Discard"));
 
                 confirmRejectLabel.SetActive(true);
             }
@@ -182,12 +187,6 @@ namespace StyleStar
             Title,
             Artist,
             Level
-        }
-
-        public enum Language
-        {
-            English,
-            Japanese
         }
 
         public enum Resolution

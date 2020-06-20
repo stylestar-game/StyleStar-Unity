@@ -9,6 +9,7 @@
         public static readonly string ConfigFile = "config.toml";
         public static readonly string TouchConfig = "TouchConfig";
         public static readonly string GameConfig = "GameConfig";
+        public static readonly string LanguageConfig = "language.toml";
 
         public static readonly string UserFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\StyleStar\\";
         public static readonly string SongFolder = "Songs";

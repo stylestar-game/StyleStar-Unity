@@ -80,9 +80,9 @@ public static class SongSelection
                 }
             }
         }
-        FolderParams.Add(new FolderParams() { Type = SortType.Title, Name = "SORT BY\nTITLE" });
-        FolderParams.Add(new FolderParams() { Type = SortType.Artist, Name = "SORT BY\nARTIST" });
-        FolderParams.Add(new FolderParams() { Type = SortType.Level, Name = "SORT BY\nLEVEL" });
+        FolderParams.Add(new FolderParams() { Type = SortType.Title, Name = ConfigFile.GetLocalizedString("Sort_Title") });
+        FolderParams.Add(new FolderParams() { Type = SortType.Artist, Name = ConfigFile.GetLocalizedString("Sort_Artist") });
+        FolderParams.Add(new FolderParams() { Type = SortType.Level, Name = ConfigFile.GetLocalizedString("Sort_Level") });
     }
 
     public static void ScrollDown()

@@ -56,6 +56,8 @@ public class GameplayDisplay : MonoBehaviour
             Globals.MusicManager.Offset = Globals.CurrentSongMetadata.PlaybackOffset * 1000;
         }
 
+        GameObject.Find("DifficultyText").SetText(ConfigFile.GetLocalizedString("Sort_Title"));
+
         loadingLeft = GameObject.Find("LoadingLeft").GetComponent<RectTransform>();
         loadingRight = GameObject.Find("LoadingRight").GetComponent<RectTransform>();
 
@@ -201,12 +203,16 @@ public class GameplayDisplay : MonoBehaviour
         CanvasObj.transform.Find("ArtistText").gameObject.SetText(meta.Artist);
         CanvasObj.transform.Find("DifficultyText").gameObject.SetText(
             childMeta != null ?
-            childMeta.Difficulty.ToString().ToUpper() :
-            meta.Difficulty.ToString().ToUpper());
+            ConfigFile.GetLocalizedString(childMeta.Difficulty.ToString()) :
+            ConfigFile.GetLocalizedString(meta.Difficulty.ToString()));
         CanvasObj.transform.Find("DifficultyNumber").gameObject.SetText(
             childMeta != null ?
             childMeta.Level.ToString("D2") :
             meta.Level.ToString("D2"));
+
+        CanvasObj.transform.Find("ScrollLabel").gameObject.SetText(ConfigFile.GetLocalizedString("Scroll"));
+        CanvasObj.transform.Find("AccuracyLabel").gameObject.SetText(ConfigFile.GetLocalizedString("Accuracy"));
+        CanvasObj.transform.Find("AutoModeLabel").gameObject.SetText(ConfigFile.GetLocalizedString("Auto_Mode_Enabled"));
 
         // Set accent colors
         GameObject.Find("NoteLaneAccent1Left").gameObject.SetColor(meta.ColorAccent.IfNull(ThemeColors.Purple));

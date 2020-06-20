@@ -56,6 +56,8 @@ public class SongSelectDisplay : MonoBehaviour
         foreach (var folder in SongSelection.FolderParams)
             folderCards.Add(new FolderCard(Pools.FolderCards.GetPooledObject(), folder.Name));
 
+        transform.Find("AutoModeText").gameObject.SetText(ConfigFile.GetLocalizedString("Auto_Mode_Enabled"));
+
         // No Songs
         if (SongSelection.Songlist.Count == 0)
         {
@@ -221,7 +223,7 @@ public class SongSelectDisplay : MonoBehaviour
         this.transform.Find("TitleText").gameObject.SetText(currentMeta.Title);
         this.transform.Find("ArtistText").gameObject.SetText(currentMeta.Artist);
         this.transform.Find("BPMText").gameObject.SetText(bpm + " BPM");
-        this.transform.Find("ChoreoText").gameObject.SetText("Choreo: " + currentMeta.GetPropertyFromChild("Designer", SongSelection.CurrentSongLevelIndex));
+        this.transform.Find("ChoreoText").gameObject.SetText(ConfigFile.GetLocalizedString("Choreo") + ": " + currentMeta.GetPropertyFromChild("Designer", SongSelection.CurrentSongLevelIndex));
     }
 
     private void UpdateLoopedSong(bool endSong)
