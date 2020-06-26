@@ -27,6 +27,8 @@ public class GameSettingsScreenDisplay : MonoBehaviour
     private static Vector3 selectionPoint = new Vector3(-127, 309);
     private static Vector3 selectionOffset = new Vector3(-47, -81);
 
+    private UnityEngine.UI.RawImage backgroundImage = null;
+
     private void Awake()
     {
         transitionFinished = false;
@@ -41,6 +43,10 @@ public class GameSettingsScreenDisplay : MonoBehaviour
 
         loadingLeft = GameObject.Find("LoadingLeft").GetComponent<RectTransform>();
         loadingRight = GameObject.Find("LoadingRight").GetComponent<RectTransform>();
+
+        backgroundImage = GameObject.Find("Bg").GetComponent<UnityEngine.UI.RawImage>();
+        if (backgroundImage != null && backgroundImage.texture != null)
+            backgroundImage.texture.wrapMode = TextureWrapMode.Repeat;
 
         Bg1.SetColor(ThemeColors.Pink);
         Bg2.SetColor(ThemeColors.Blue);
@@ -68,6 +74,7 @@ public class GameSettingsScreenDisplay : MonoBehaviour
             return;
 
         GameSettingsScreen.Draw();
+        Util.TranslateRawImage(ref backgroundImage, Globals.BackgroundOffset);
 
         float ratio;
         switch (GameState.TransitionState)

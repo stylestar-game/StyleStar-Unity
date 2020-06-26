@@ -53,4 +53,14 @@ public static partial class Util
         Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         return canvas ? canvas.pixelRect : new Rect();
     }
+
+    // Slide the texture in the direction indicated by inTexOffsetBy. Assume there is a UV wrapping to this texture.
+    public static void TranslateRawImage(ref UnityEngine.UI.RawImage rawImage, Vector2 inTexOffsetBy)
+    {
+        if (rawImage != null && rawImage.texture != null)
+        {
+            Rect currTexOffset = rawImage.uvRect;
+            rawImage.uvRect = new Rect(currTexOffset.x + inTexOffsetBy.x, currTexOffset.y + inTexOffsetBy.y, currTexOffset.width, currTexOffset.height);
+        }
+    }
 }

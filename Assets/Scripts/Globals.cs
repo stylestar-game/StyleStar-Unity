@@ -41,6 +41,7 @@ namespace StyleStar
         //public static Vector2 ItemOrigin = new Vector2(144, 212);
         public static Vector2 CardOrigin = new Vector2(-288, 88);
         public static Vector2 CardOffset = new Vector2(-75, -130);
+        public static Vector2 BackgroundOffset = new Vector2(0.0005f, 0.0005f);
 
         // public static double CurrentBpm { get; set; }
         public static List<BpmChangeEvent> BpmEvents { get; set; }

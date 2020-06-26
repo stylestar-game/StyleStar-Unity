@@ -24,6 +24,8 @@ public class SongSelectDisplay : MonoBehaviour
     private bool transitionFinished;
     private int currentSongIndex = -1;
 
+    private UnityEngine.UI.RawImage backgroundImage = null;
+
     private void Awake()
     {
         transitionFinished = false;
@@ -69,6 +71,12 @@ public class SongSelectDisplay : MonoBehaviour
             transform.Find("Bg").gameObject.SetActive(true);
             transform.Find("NoSongs").gameObject.SetActive(true);
         }
+        else
+        {
+            backgroundImage = GameObject.Find("BgLine").GetComponent<UnityEngine.UI.RawImage>();
+            if (backgroundImage != null && backgroundImage.texture != null)
+                backgroundImage.texture.wrapMode = TextureWrapMode.Repeat;
+        }
 
         init = true;
     }
@@ -86,6 +94,7 @@ public class SongSelectDisplay : MonoBehaviour
         // Always draw cards (this has to happen before the loading screen slides open)
         if (SongSelection.Songlist.Count > 0)
         {
+            Util.TranslateRawImage(ref backgroundImage, Globals.BackgroundOffset);
             if (SongSelection.SelectedFolderIndex == -1)
             {
                 folderCards.SetActive(true);
