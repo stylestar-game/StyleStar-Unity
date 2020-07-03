@@ -7,7 +7,7 @@ namespace StyleStar
     public static class GameSettingsScreen
     {
         //private static List<Label> fixedLabels = new List<Label>();
-        private static List<SettingOption> options;
+        private static List<SettingOption> options = null;
         //private static Label confirmLabel;
         //private static Label rejectLabel;
 
@@ -28,7 +28,14 @@ namespace StyleStar
 
         private static Language selectedLanguage = Language.English;
 
-        private static bool isInitialized = false;
+        private const int LANGUAGE_SETTING = 0;
+        private const int RESOLUTION_SETTING = 1;
+        private const int ORIENTATION_SETTING = 2;
+        private const int FREE_PLAY_SETTING = 3;
+        private const int AUTO_MODE_SETTING = 4;
+        private const int CONFIRM_EXIT = 5;
+
+        private const int OPEN_LANGUAGE_DIALOG = 1;
 
         public static void Initialize(GameObject selectObj, GameObject confirmReject)
         {
@@ -36,30 +43,22 @@ namespace StyleStar
             selectionObj = selectObj;
             confirmRejectLabel = confirmReject;
 
-            // Only needs to be loaded once
-            if (!isInitialized)
-            {
-                options = new List<SettingOption>() {
-                    new SettingOption(ConfigFile.GetLocalizedString("Lang_Title"), new string[] { ConfigFile.GetLocalizedString("Lang_Name"),
-                        ConfigFile.GetLocalizedString("Lang_Open") }),
-                    new SettingOption(ConfigFile.GetLocalizedString("Screen_Res"), new string[] { "640x360", "1280x720", "1920x1080" }),
-                    new SettingOption(ConfigFile.GetLocalizedString("Touch_Res"), new string[] {
-                        ConfigFile.GetLocalizedString("Hor_0"), ConfigFile.GetLocalizedString("Ver_90"),
-                        ConfigFile.GetLocalizedString("Hor_180"), ConfigFile.GetLocalizedString("Ver_270")
-                    }),
-                    new SettingOption(ConfigFile.GetLocalizedString("En_Free"), new string[] { ConfigFile.GetLocalizedString("On"), ConfigFile.GetLocalizedString("Off") }),
-                    new SettingOption(ConfigFile.GetLocalizedString("Auto_Mode_2"), new string[] { ConfigFile.GetLocalizedString("Off"),
-                        ConfigFile.GetLocalizedString("On"), ConfigFile.GetLocalizedString("Down_Only") }),
-                    new SettingOption("", new string[] { ConfigFile.GetLocalizedString("Save_Exit"), ConfigFile.GetLocalizedString("Leave_No_Save") })
-                };
-                isInitialized = true;
-            }
-            else
-            {
-                // We need to do this because the pool gets deleted every time we exit from this menu.
-                foreach (var option in options)
-                    option.InitializeOptionObj();
-            }
+            if (options != null)
+                options.Clear(); // clear data if there's anything in here from last time
+
+            options = new List<SettingOption>() {
+                new SettingOption(ConfigFile.GetLocalizedString("Lang_Title"), new string[] { ConfigFile.GetLocalizedString("Lang_Name"),
+                    ConfigFile.GetLocalizedString("Lang_Open") }),
+                new SettingOption(ConfigFile.GetLocalizedString("Screen_Res"), new string[] { "640x360", "1280x720", "1920x1080" }),
+                new SettingOption(ConfigFile.GetLocalizedString("Touch_Res"), new string[] {
+                    ConfigFile.GetLocalizedString("Hor_0"), ConfigFile.GetLocalizedString("Ver_90"),
+                    ConfigFile.GetLocalizedString("Hor_180"), ConfigFile.GetLocalizedString("Ver_270")
+                }),
+                new SettingOption(ConfigFile.GetLocalizedString("En_Free"), new string[] { ConfigFile.GetLocalizedString("On"), ConfigFile.GetLocalizedString("Off") }),
+                new SettingOption(ConfigFile.GetLocalizedString("Auto_Mode_2"), new string[] { ConfigFile.GetLocalizedString("Off"),
+                    ConfigFile.GetLocalizedString("On"), ConfigFile.GetLocalizedString("Down_Only") }),
+                new SettingOption("", new string[] { ConfigFile.GetLocalizedString("Save_Exit"), ConfigFile.GetLocalizedString("Leave_No_Save") })
+           };
         }
 
         public static void Draw()
@@ -73,7 +72,7 @@ namespace StyleStar
 
             if (confirmSelection)
             {
-                if (options[5].SelectedOption == 0)
+                if (options[CONFIRM_EXIT].SelectedOption == 0)
                     confirmRejectLabel.SetText(ConfigFile.GetLocalizedString("Select_Confirm"));
                 else
                     confirmRejectLabel.SetText(ConfigFile.GetLocalizedString("Select_Discard"));
@@ -129,12 +128,22 @@ namespace StyleStar
             {
                 confirmSelection = false;
                 // Config is saved in the main thread
-                return options[5].SelectedOption == 0 ? DialogResult.Confirm : DialogResult.Cancel;
+                return options[CONFIRM_EXIT].SelectedOption == 0 ? DialogResult.Confirm : DialogResult.Cancel;
             }
-            else
+            else if (selectedCategory == CONFIRM_EXIT)
                 confirmSelection = true;
+            else if (IsLanguageDialogSelected())
+            {
+                LanguageSelect.NextGameMode = Mode.GameSettings;
+                return DialogResult.Confirm;
+            }
 
             return DialogResult.NoAction;
+        }
+
+        public static bool IsLanguageDialogSelected()
+        {
+            return selectedCategory == LANGUAGE_SETTING && options[LANGUAGE_SETTING].SelectedOption == OPEN_LANGUAGE_DIALOG;
         }
 
         public static void SetConfig(Dictionary<string, object> config)
@@ -147,16 +156,16 @@ namespace StyleStar
                         selectedLanguage = (Language)Convert.ToInt32(entry.Value);
                         break;
                     case ConfigKeys.Resolution:
-                        options[1].SelectedOption = Convert.ToInt32(entry.Value);
+                        options[RESOLUTION_SETTING].SelectedOption = Convert.ToInt32(entry.Value);
                         break;
                     case ConfigKeys.TouchScreenOrientation:
-                        options[2].SelectedOption = Convert.ToInt32(entry.Value);
+                        options[ORIENTATION_SETTING].SelectedOption = Convert.ToInt32(entry.Value);
                         break;
                     case ConfigKeys.EnableFreePlay:
-                        options[3].SelectedOption = Convert.ToBoolean(entry.Value) ? 0 : 1;
+                        options[FREE_PLAY_SETTING].SelectedOption = Convert.ToBoolean(entry.Value) ? 0 : 1;
                         break;
                     case ConfigKeys.AutoMode:
-                        options[4].SelectedOption = Convert.ToInt32(entry.Value);
+                        options[AUTO_MODE_SETTING].SelectedOption = Convert.ToInt32(entry.Value);
                         break;
                     default:
                         break;
@@ -168,7 +177,7 @@ namespace StyleStar
         {
             return new Dictionary<string, object>()
             {
-                {ConfigKeys.Language, (int)selectedLanguage},
+                {ConfigKeys.Language, (int)ConfigFile.LocalizedLanguage},
                 {ConfigKeys.Resolution,options[1].SelectedOption },
                 {ConfigKeys.TouchScreenOrientation, options[2].SelectedOption },
                 {ConfigKeys.EnableFreePlay, options[3].SelectedOption == 0 ? true : false },

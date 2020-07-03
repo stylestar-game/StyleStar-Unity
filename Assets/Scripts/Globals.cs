@@ -268,6 +268,7 @@ namespace StyleStar
         MainMenu,
         GameSettings,
         SongSelect,
+        LanguageSelect,
         Loading,
         GamePlay,
         Results,
@@ -309,6 +310,7 @@ namespace StyleStar
         English,
         Spanish,
         Japanese,
-        French
+        French,
+        None
     }
 }

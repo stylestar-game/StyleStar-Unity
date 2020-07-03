@@ -2,13 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using StyleStar;
+using System.IO;
 
 public class SongSelectInputs : MonoBehaviour
 {
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        // Need to load language selection if the game is being loaded for the first time
+        if (!File.Exists(Defines.ConfigFile))
+        {
+            GameState.TransitionState = TransitionState.EnteringLoadingScreen;
+            GameState.Destination = Mode.LanguageSelect;
+            StartCoroutine(Util.SwitchSceneAsync());
+        }
     }
 
     // Update is called once per frame

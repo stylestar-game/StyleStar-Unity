@@ -27,6 +27,9 @@ public static partial class Util
             case Mode.Results:
                 dest = "Scenes/ResultScreen";
                 break;
+            case Mode.LanguageSelect:
+                dest = "Scenes/LanguageSelect";
+                break;
             default:
                 break;
         }

@@ -15,10 +15,14 @@ public static class ConfigFile
 
     private static Dictionary<string, object> localizationTable = null;
 
-    private static string GetLocalizedLanguageString()
+    private static string GetLocalizedLanguageString(Language lang = Language.None)
     {
         string localizedLang = "";
-        switch (LocalizedLanguage)
+        Language usedLang = lang;
+        if (usedLang == Language.None)
+            usedLang = LocalizedLanguage;
+
+        switch (usedLang)
         {
             case Language.French: localizedLang = "French"; break;
             case Language.Japanese: localizedLang = "Japanese"; break;
@@ -60,7 +64,7 @@ public static class ConfigFile
         tomlConfigTable.Add("TouchConfig", touchConfigDict);
 
         Dictionary<string, object> gameConfigDict = new Dictionary<string, object>();
-        gameConfigDict.Add("Language", 0);
+        gameConfigDict.Add("Language", (int)LocalizedLanguage);
         gameConfigDict.Add("Resolution", 0);
         gameConfigDict.Add("TouchScreenOrientation", 0);
         gameConfigDict.Add("EnableFreePlay", true);
@@ -138,12 +142,12 @@ public static class ConfigFile
         return null;
     }
 
-    public static string GetLocalizedString(string stringKey)
+    public static string GetLocalizedString(string stringKey, Language lang = Language.None)
     {
         string outStr = "";
         if (localizationTable != null)
         {
-            string localizedLang = GetLocalizedLanguageString();
+            string localizedLang = GetLocalizedLanguageString(lang);
             if (localizationTable.ContainsKey(localizedLang))
                 outStr = ((string)((Dictionary<string, object>)localizationTable[localizedLang])[stringKey]);
         }

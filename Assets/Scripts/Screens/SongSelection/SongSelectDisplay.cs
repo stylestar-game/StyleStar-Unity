@@ -56,7 +56,16 @@ public class SongSelectDisplay : MonoBehaviour
             levelCards.Add(new FolderCard(Pools.FolderCards.GetPooledObject(), "LEVEL " + (i + 1)));
         folderCards = new List<CardBase>();
         foreach (var folder in SongSelection.FolderParams)
+        {
+            switch (folder.Type)
+            {
+                case SortType.Title: folder.Name = ConfigFile.GetLocalizedString("Sort_Title"); break;
+                case SortType.Artist: folder.Name = ConfigFile.GetLocalizedString("Sort_Artist"); break;
+                case SortType.Level: folder.Name = ConfigFile.GetLocalizedString("Sort_Level"); break;
+                default: break;
+            }
             folderCards.Add(new FolderCard(Pools.FolderCards.GetPooledObject(), folder.Name));
+        }
 
         transform.Find("AutoModeText").gameObject.SetText(ConfigFile.GetLocalizedString("Auto_Mode_Enabled"));
 

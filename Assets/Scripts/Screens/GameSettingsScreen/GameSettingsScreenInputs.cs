@@ -32,14 +32,15 @@ public class GameSettingsScreenInputs : MonoBehaviour
             DialogResult gameSettingResult = GameSettingsScreen.Select();
             if (gameSettingResult != DialogResult.NoAction)
             {
+                bool bIsLangDialogSelected = GameSettingsScreen.IsLanguageDialogSelected();
                 // save the TOML file here
-                if (gameSettingResult == DialogResult.Confirm)
+                if (gameSettingResult == DialogResult.Confirm && !bIsLangDialogSelected)
                 {
                     ConfigFile.Update();
                     ConfigFile.Save();
                 }
                 GameState.TransitionState = TransitionState.EnteringLoadingScreen;
-                GameState.Destination = Mode.SongSelect;
+                GameState.Destination = bIsLangDialogSelected ? Mode.LanguageSelect : Mode.SongSelect;
             }
         }
     }
