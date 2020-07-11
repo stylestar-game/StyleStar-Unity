@@ -64,14 +64,18 @@ namespace StyleStar
                             // Look for BPM change tags
                             if (Regex.Match(line, "^(#BPMC)").Success)
                             {
-                                var bpmSplit = Regex.Split(line, @"[(#BPMC)\s:.]+").Where(s => !String.IsNullOrEmpty(s));
+                                var subLine = line.Replace("#BPMC", "");
+                                var bpmSplit = Regex.Split(subLine, @"[\s:.]+").Where(s => !String.IsNullOrEmpty(s));
                                 if (bpmSplit.Count() == 3)
                                 {
                                     id = bpmSplit.ElementAt(0).ParseBase36();
                                     measure = int.Parse(bpmSplit.ElementAt(1));
                                     subDiv = double.Parse(bpmSplit.ElementAt(2)) / 192.0;
 
-                                    Metadata.BpmEvents.Add(new BpmChangeEvent(Metadata.BpmIndex[id], beatsPerMeasure * (measure + subDiv)));
+                                    if (Metadata.BpmIndex.ContainsKey(id))
+                                        Metadata.BpmEvents.Add(new BpmChangeEvent(Metadata.BpmIndex[id], beatsPerMeasure * (measure + subDiv)));
+                                    else
+                                        Console.WriteLine("Failed to parse BPM Change: {0}", line);
                                 }
                                 else
                                     Console.WriteLine("Failed to parse BPM Change: {0}", line);
