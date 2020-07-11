@@ -35,7 +35,7 @@ namespace StyleStar
 
             if (confirmSelection)
             {
-                confirmObjectLabel.SetText(ConfigFile.GetLocalizedString("Select_Confirm"));
+                confirmObjectLabel.SetText(ConfigFile.GetLocalizedString("Select_Confirm", GetLanguage()));
                 confirmObjectLabel.SetActive(true);
             }
             else
