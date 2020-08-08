@@ -149,7 +149,7 @@ public static class ConfigFile
         {
             string localizedLang = GetLocalizedLanguageString(lang);
             if (localizationTable.ContainsKey(localizedLang))
-                outStr = ((string)((Dictionary<string, object>)localizationTable[localizedLang])[stringKey]);
+                outStr = ((string)((Dictionary<string, object>)localizationTable[localizedLang])[stringKey]).ToUpper();
         }
         return outStr;
     }
