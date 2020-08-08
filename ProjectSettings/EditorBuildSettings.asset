@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameSettingsScreen.unity
     guid: 5414068c8c32ed24ca826490cee599bf
+  - enabled: 1
+    path: Assets/Scenes/LanguageSelect.unity
+    guid: 109ccfeaa464f4c5c87339791382013a
   m_configObjects: {}
