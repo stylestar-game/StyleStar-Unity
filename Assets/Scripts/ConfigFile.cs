@@ -121,6 +121,12 @@ public static class ConfigFile
         Toml.WriteFile(configTable, Defines.ConfigFile);
     }
 
+    public static void Recreate()
+    {
+        File.Delete(Defines.ConfigFile);
+        CreateConfigFile();
+    }
+
     //public Dictionary<string, object> this[string key]
     //{
     //    get { return (Dictionary<string, object>)configTable[key]; }

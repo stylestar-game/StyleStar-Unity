@@ -20,6 +20,9 @@ public class LanguageSelectInputs : MonoBehaviour
             if (outRes == DialogResult.Confirm)
             {
                 ConfigFile.LocalizedLanguage = LanguageSelect.GetLanguage();
+                // if it's the first time opening the game, recreate ConfigFile to capture Language state
+                if (LanguageSelect.NextGameMode == Mode.SongSelect)
+                    ConfigFile.Recreate();
                 GameState.TransitionState = TransitionState.EnteringLoadingScreen;
                 GameState.Destination = LanguageSelect.NextGameMode;
             }
