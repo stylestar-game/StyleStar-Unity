@@ -92,7 +92,7 @@ public class GameplayDisplay : MonoBehaviour
         {
             var currentBeat = Globals.MusicManager.GetCurrentBeat();
             var motions = Globals.CurrentNoteCollection.Motions.Where(p => p.BeatLocation > currentBeat - 6 && p.BeatLocation < currentBeat + 16);
-            var holds = Globals.CurrentNoteCollection.Holds.Where(p => p.StartNote.BeatLocation > currentBeat - 16 && p.StartNote.BeatLocation < currentBeat + 16);
+            var holds = Globals.CurrentNoteCollection.Holds.Where(p => p.StartNote.BeatLocation > currentBeat - 72 && p.StartNote.BeatLocation < currentBeat + 16);
             var notes = Globals.CurrentNoteCollection.Steps.Where(p => p.BeatLocation > currentBeat - 6 && p.BeatLocation < currentBeat + 16);
             var marks = Globals.CurrentNoteCollection.Markers.Where(p => p.BeatLocation > currentBeat - 6 && p.BeatLocation < currentBeat + 16);
 
