@@ -12,7 +12,6 @@ Mosey on over to our [Discord server](https://discord.gg/sZ2jJKE), or look at [o
 
 This was developed using Unity version 2018.4.15f1, it can currently be used with Unity 2018.04.20f1 without issue. 
 The build is not currently compatible with later editions of Unity, but there will be upgrade relatively soon.
-StyleStar is also only compatible on Windows, but we hope to change this in the future as well.
 
 ### Project Setup
 
