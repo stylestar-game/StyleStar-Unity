@@ -4,6 +4,7 @@
     {
         public bool WasHit;
         public float Difference; // In milliseconds, + is early and - is late
+        public bool WasProcessed = false;
     }
 
     public enum HitGrade

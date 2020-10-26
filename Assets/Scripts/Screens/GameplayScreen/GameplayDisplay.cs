@@ -22,7 +22,7 @@ public class GameplayDisplay : MonoBehaviour
     private RectTransform loadingLeft;
     private RectTransform loadingRight;
 
-
+    private CaretManager caretManager = new CaretManager();
 
     private float transitionStartTime = -1;
     private bool loadStarted = false;
@@ -66,6 +66,7 @@ public class GameplayDisplay : MonoBehaviour
         GameObject.Find("RightHold").GetComponent<MeshRenderer>().sortingLayerName = "Rightold";
         GameObject.Find("LeftSlide").GetComponent<MeshRenderer>().sortingLayerName = "LeftHold";
         GameObject.Find("RightSlide").GetComponent<MeshRenderer>().sortingLayerName = "RightHold";
+        caretManager.Enable(CanvasObj);
     }
 
     // Update is called once per frame
@@ -100,7 +101,14 @@ public class GameplayDisplay : MonoBehaviour
                 mark.Draw(currentBeat);
 
             foreach (var motion in motions)
+            {
                 motion.Draw(currentBeat);
+                if (motion.HitResult.WasHit && !motion.HitResult.WasProcessed)
+                {
+                    caretManager.TriggerCarets(motion.Motion);
+                    motion.HitResult.WasProcessed = true;
+                }
+            }
 
             foreach (var hold in holds)
                 hold.Draw(currentBeat);
@@ -111,6 +119,8 @@ public class GameplayDisplay : MonoBehaviour
 
         // Draw foot markers
         TouchCollection.Draw();
+
+        caretManager.AnimateCarets(CanvasObj);
 
         // Update UI
         CanvasObj.transform.Find("ScrollNumMajor").gameObject.SetText(((int)Math.Floor(GameState.ScrollSpeed)).ToString("D1"));
@@ -143,6 +153,7 @@ public class GameplayDisplay : MonoBehaviour
                 }
                 break;
             case TransitionState.EnteringLoadingScreen:
+                caretManager.Disable(CanvasObj);
                 ratio = DrawLoadingScreenTransition(true);
                 if (ratio <= 0.0f)
                 {
